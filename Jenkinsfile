@@ -1,37 +1,29 @@
 pipeline {
     agent any
-    
+
     stages {
-        stage('Clone Repository') {
-            steps {
-                // Pull the latest code from Git
-                git 'https://github.com/sky251/Node-app.git'
-            }
-        }
         stage('Build') {
             steps {
-                // Build the Docker image
-                sh 'docker build -t myapp .'
+                // Use bat instead of sh for Windows
+                bat 'npm install'
             }
         }
         stage('Test') {
             steps {
-                // Run any tests (adjust this to match your setup)
-                sh 'npm test'
-            }
-        }
-        stage('Docker Login') {
-            steps {
-                // Log in to Docker Hub or other registry
-                sh 'docker login -u sky251 -p Sky@12345'
+                bat 'npm test'
             }
         }
         stage('Deploy') {
             steps {
-                // Tag and push the Docker image to a container registry
-                sh 'docker tag myapp $DOCKER_USER/myapp:latest'
-                sh 'docker push $DOCKER_USER/myapp:latest'
+                echo 'Deploying the application...'
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            cleanWs()
         }
     }
 }
